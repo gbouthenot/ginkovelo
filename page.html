@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="page.js"></script>
+</head>
+<body>
+
+Arrêt: <div id="tram_cham_retour"></div>
+
+
+<script>
+var abc = () => {
+    go_ginko().then(r=>{
+        document.getElementById("tram_cham_retour").innerHTML += r + "<br />";
+    })
+}
+abc();
+setInterval(abc, 50000);
+</script>
+</body>
+</html>
