@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script type="text/javascript" src="page.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script type="text/javascript" src="page.js"></script>
+  <style>
+.req { display:inline; }
+.val { display:inline; }
+  </style>
 </head>
 <body>
 
-Arrêt: <div id="tram_cham_retour"></div>
+<div>
+Chamars → Micropolis: <div class="val" id="tram_cham_chaz"></div> (<div class="req" id="tram_cham_req"></div>)
+</div>
 
+<div>
+Chamars → Chalezeule: <div class="val" id="tram_cham_chal"></div>
+</div>
+<div>
+Chamars → Gare Viotte: <div class="val" id="tram_cham_gare"></div>
+</div>
 
 <script>
-var abc = () => {
-    go_ginko().then(r=>{
-        document.getElementById("tram_cham_retour").innerHTML += r + "<br />";
-    })
-}
-abc();
-setInterval(abc, 50000);
+var ginko = new Ginko("tram_cham_req", "tram_cham_chaz", "tram_cham_chal", "tram_cham_gare");
+ginko.fetch1st();
+//setInterval(_ => ginko.fetch(), 10000);
+setTimeout(_ => ginko.fetch(), 10000);
 </script>
 </body>
 </html>
