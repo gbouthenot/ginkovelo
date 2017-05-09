@@ -6,26 +6,26 @@
   <style>
 .req { display:inline; }
 .val { display:inline; }
+ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
   </style>
 </head>
 <body>
 
-<div>
-Chamars → Micropolis: <div class="val" id="tram_cham_chaz"></div> (<div class="req" id="tram_cham_req"></div>)
-</div>
+<div class="arretTram" id="tram_cham">
+  <div class="nbReq"></div>
+  <div class="nomArret">Arrêt <span class="value"></span>:</div>
+  <ul class="destinations"></ul>
+</div><!-- .arretTram -->
 
-<div>
-Chamars → Chalezeule: <div class="val" id="tram_cham_chal"></div>
-</div>
-<div>
-Chamars → Gare Viotte: <div class="val" id="tram_cham_gare"></div>
-</div>
+<script type="text/html" id="tplDestination">
+  <li class="destination" data-nomdest="${NOMDEST}">→ ${NOMDEST} : <span class="horaires"></span></li>
+</script>
 
 <script>
-var ginko = new Ginko("tram_cham_req", "tram_cham_chaz", "tram_cham_chal", "tram_cham_gare");
-ginko.fetch1st();
-//setInterval(_ => ginko.fetch(), 10000);
-setTimeout(_ => ginko.fetch(), 10000);
+var ginko = new Ginko("tram_cham", "chamars");
+ginko.fetchFirst();
+setInterval(_ => ginko.fetchNext(), 10000);
+//setTimeout(_ => ginko.fetchNext(), 10000);
 </script>
 </body>
 </html>

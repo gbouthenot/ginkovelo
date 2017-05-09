@@ -1,56 +1,64 @@
 class Ginko {
-  constructor(idReq, idTarget, idTarget2, idTarget3) {
+  constructor(idReq, urlNomStation) {
     this.nbReq = 0;
     this.idReq = idReq;
-    this.idTarget = idTarget;
-    this.idTarget2 = idTarget2;
-    this.idTarget3 = idTarget3;
-    this.nomStation = "";
+    this.url = `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${urlNomStation}`;
+    this.dom = document.getElementById(idReq);
   }
 
-  fetch1st () {
-    fetch("https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=Chamars")
-    .then(r=>r.json())
-    // obtient le nom de la station
-    .then(r=>{
-      this.nomStation = r.objets.nomExact;
-      return r;
-    })
-    // ne garde que les temps
-    .then(r => r.objets.listeTemps)
+  replaceAll (string, search, replace) {
+    return string.split(search).join(replace)
+  }
+
+  promFetch () {
+    const nbReq = ++this.nbReq;
+    const nbReqDom = this.dom.querySelector(".nbReq")
+    nbReqDom.innerHTML = nbReq + "…";
+    return fetch(this.url)
+    .then((r)=>{nbReqDom.innerHTML = nbReq; return r.json();})
+  }
+
+  fetchFirst () {
+    this.promFetch()
+    .then(data=>this.firstReq(data))
+    .then(data=>this.nextReq(data))
+    .catch(r=>console.log("Erreur", r))
+  }
+
+  fetchNext () {
+    this.promFetch()
+    .then(data=>this.nextReq(data))
+    .catch(err=>console.log("Erreur", err))
+  }
+
+  firstReq(data) {
+    const tpldest = document.getElementById("tplDestination").innerHTML;
+
+    // nom de la station
+    this.dom.querySelector(".nomArret .value").innerHTML = data.objets.nomExact;
+
     // ne garde que les lignes de tram
-    .then(r=>r.filter(a=>["101", "102"].includes(a.idLigne)))
-    // ne garde que le nom de destination
-    .then(r=>r.map(a=>a.destination))
-    // unique
-    .then(r=>r.filter((x, i, a) => a.indexOf(x) == i))
-    .then(r=>console.log(r))
+    let r = data.objets.listeTemps.filter(a=>["101", "102"].includes(a.idLigne));
+
+    // ne garde que le nom de destination puis unique
+    r = r.map(a=>a.destination).filter((x, i, a) => a.indexOf(x) == i);
+
+    // pour chaque destination
+    r.forEach((nomdest)=>{
+      let tpl = this.replaceAll(tpldest, "${NOMDEST}", nomdest);
+      this.dom.querySelector(".destinations").innerHTML += tpl;
+    });
+
+    return data;
   }
 
-  fetch () {
-    console.log("fetch", this);
-
-    var nbReq = ++this.nbReq;
-
-    document.getElementById(this.idReq).innerHTML = nbReq + "…";
-    return fetch("https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=Chamars")
-    .then(r=>r.json())
-//    .then(r=>r.objets.listeTemps.filter((a)=>a.idArret=="t_cham2"&&a.temps[0]!='I').map((a)=>parseInt(a.temps,10)).sort((a,b)=>a-b))
-    .then(r=> [
-      r.objets.listeTemps.filter((a)=>a.destination=="Hauts du Chazal"&&a.temps[0]!='I').map((a)=>parseInt(a.temps,10)).sort((a,b)=>a-b)
-      , r.objets.listeTemps.filter((a)=>a.destination=="Chalezeule"&&a.temps[0]!='I').map((a)=>parseInt(a.temps,10)).sort((a,b)=>a-b)
-      , r.objets.listeTemps.filter((a)=>a.destination=="Gare Viotte"&&a.temps[0]!='I').map((a)=>parseInt(a.temps,10)).sort((a,b)=>a-b)
-    ])
-    .then(r=>[
-      `Tramway dans: ${r[0].join(", ")} minutes`
-      , `Tramway dans: ${r[1].join(", ")} minutes`
-      , `Tramway dans: ${r[2].join(", ")} minutes`
-    ])
-    .then(r=>{
-      document.getElementById(this.idReq).innerHTML = nbReq;
-      document.getElementById(this.idTarget).innerHTML = r[0];
-      document.getElementById(this.idTarget2).innerHTML = r[1];
-      document.getElementById(this.idTarget3).innerHTML = r[2];
-    })
+  nextReq(r) {
+    this.dom.querySelectorAll("ul li.destination").forEach( (domdest) => {
+      const domdestvalue = domdest.getAttribute("data-nomdest");
+      let temps = r.objets.listeTemps;
+      temps = temps.filter((a)=>a.destination==domdestvalue&&a.temps[0]!='I');
+      temps = temps.map((a)=>parseInt(a.temps,10)).sort((a,b)=>a-b);
+      domdest.querySelector(".horaires").innerHTML = temps;
+    });
   }
 }
