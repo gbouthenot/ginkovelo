@@ -1,12 +1,20 @@
 class Ginko {
   constructor(idReq, urlNomStation) {
     this.nbReq = 0;
+    this.rendered = 0;
     this.idReq = idReq;
     this.url = `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${urlNomStation}`;
     this.dom = document.getElementById(idReq);
   }
 
-  replaceAll (string, search, replace) {
+  timeIso(date) {
+    if (!date) { date = new Date(); }
+    return ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)
+      + ":" + ("0" + date.getSeconds()).slice(-2);
+  }
+
+
+  replaceAll(string, search, replace) {
     return string.split(search).join(replace)
   }
 
@@ -15,20 +23,18 @@ class Ginko {
     const nbReqDom = this.dom.querySelector(".nbReq")
     nbReqDom.innerHTML = nbReq + "…";
     return fetch(this.url)
-    .then((r)=>{nbReqDom.innerHTML = nbReq; return r.json();})
+    .then((r)=>{nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`; return r.json();})
   }
 
-  fetchFirst () {
-    this.promFetch()
-    .then(data=>this.firstReq(data))
-    .then(data=>this.nextReq(data))
-    .catch(r=>console.log("Erreur", r))
-  }
+  fetch () {
+    const prom = this.promFetch();
 
-  fetchNext () {
-    this.promFetch()
-    .then(data=>this.nextReq(data))
-    .catch(err=>console.log("Erreur", err))
+    if (!this.rendered) {
+      prom.then(data=>this.firstReq(data))
+      this.rendered++;
+    }
+    prom.then(data=>this.nextReq(data))
+    prom.catch(r=>console.log("Erreur", r))
   }
 
   firstReq(data) {

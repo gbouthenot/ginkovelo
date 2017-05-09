@@ -13,7 +13,7 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 
 <div class="arretTram" id="tram_cham">
   <div class="nbReq"></div>
-  <div class="nomArret">Arrêt <span class="value"></span>:</div>
+  <div class="nomArret">Tramway arrêt <span class="value"></span>:</div>
   <ul class="destinations"></ul>
 </div><!-- .arretTram -->
 
@@ -23,9 +23,9 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 
 <script>
 var ginko = new Ginko("tram_cham", "chamars");
-ginko.fetchFirst();
-setInterval(_ => ginko.fetchNext(), 10000);
-//setTimeout(_ => ginko.fetchNext(), 10000);
+ginko.fetch();
+setInterval(_ => ginko.fetch(), 10000);
+//setTimeout(_ => ginko.fetch(), 10000);
 </script>
 </body>
 </html>
