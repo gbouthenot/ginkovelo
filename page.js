@@ -68,3 +68,50 @@ class Ginko {
     });
   }
 }
+
+
+
+
+
+
+
+class Velocite {
+  constructor(idReq, contract, apiKey) {
+    this.nbReq = 0;
+    this.idReq = idReq;
+    this.url = `https://api.jcdecaux.com/vls/v1/stations?contract=${contract}&apiKey=${apiKey}`;
+    this.dom = document.getElementById(idReq);
+  }
+
+  timeIso(date) {
+    if (!date) { date = new Date(); }
+    return ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)
+      + ":" + ("0" + date.getSeconds()).slice(-2);
+  }
+
+  promFetch () {
+    const nbReq = ++this.nbReq;
+    const nbReqDom = this.dom.querySelector(".nbReq")
+    nbReqDom.innerHTML = nbReq + "…";
+    return fetch(this.url)
+    .then((r)=>{nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`; return r.json();})
+  }
+
+  fetch () {
+    const prom = this.promFetch();
+
+    prom.then(data=>{this.nextReq(data)})
+    prom.catch(r=>console.log("Erreur", r))
+  }
+
+  nextReq(r) {
+    let txt = "";
+    // trie par numéro
+    r = r.sort((a,b)=>a.number-b.number);
+
+    r.forEach(st=>{
+      txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands}<br />`;
+    });
+    this.dom.querySelector(".stations").innerHTML = txt;
+  }
+}
