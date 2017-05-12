@@ -12,14 +12,14 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 <body>
 
 <div class="arretTram" id="tram_cham">
-  <div class="nbReq"></div>
+  <div class="req"><span class="nbReq"></span> — Refresh every <input class="interval" type="number" value="10"/> seconds</div>
   <div class="nomArret">Tramway arrêt <span class="value"></span>:</div>
   <ul class="destinations"></ul>
 </div><!-- .arretTram -->
 
+Stations vélos:
 <div class="stationVelo" id="velo_11">
-  <div class="nbReq"></div>
-  <div class="nomArret">Stations vélos:</div>
+  <div class="req"><span class="nbReq"></span> — Refresh every <input class="interval" type="number" value="10"/> seconds — Show all: <input type="checkbox" /></div>
   <div class="stations"></div>
 </div><!-- .arretTram -->
 
@@ -30,13 +30,9 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 <script>
 /* eslint-disable no-unused-vars */
 const ginko = new Ginko('tram_cham', 'chamars');
-ginko.fetch();
-setInterval(_ => ginko.fetch(), 10000);
-// setTimeout(_ => ginko.fetch(), 10000);
 
 const velo6t = new Velocite('velo_11', 'Besancon', '***your_id***');
-velo6t.fetch();
-//setInterval(_ => velo6t.fetch(), 10000);
+
 </script>
 </body>
 </html>

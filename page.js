@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus, no-console, no-multiple-empty-lines, no-param-reassign,
-   class-methods-use-this */
+   class-methods-use-this, no-unused-vars */
 class Ginko {
   constructor(idReq, urlNomStation) {
     this.nbReq = 0;
@@ -7,6 +7,18 @@ class Ginko {
     this.idReq = idReq;
     this.url = `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${urlNomStation}`;
     this.dom = document.getElementById(idReq);
+    this.busy = false;
+    this.lastUpdate = 0;
+    this.now = 0;
+    window.setInterval(_ => this.interrupt(), 1000);
+  }
+
+  interrupt() {
+    this.now = Math.floor(Date.now() / 1000);
+    const interval = parseInt(this.dom.querySelector('.interval').value, 10);
+    if (interval > 0 && this.now - this.lastUpdate >= interval) {
+      this.fetch();
+    }
   }
 
   timeIso(date = new Date()) {
@@ -23,9 +35,15 @@ class Ginko {
   promFetch() {
     const nbReq = ++this.nbReq;
     const nbReqDom = this.dom.querySelector('.nbReq');
+    this.busy = true;
     nbReqDom.innerHTML = `${nbReq}…`;
     return fetch(this.url)
-    .then((r) => { nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`; return r.json(); });
+    .then((r) => {
+      this.busy = false;
+      this.lastUpdate = Math.floor(Date.now() / 1000);
+      nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`;
+      return r.json();
+    });
   }
 
   fetch() {
@@ -77,12 +95,25 @@ class Ginko {
 
 
 
+
 class Velocite {
   constructor(idReq, contract, apiKey) {
     this.nbReq = 0;
     this.idReq = idReq;
     this.url = `https://api.jcdecaux.com/vls/v1/stations?contract=${contract}&apiKey=${apiKey}`;
     this.dom = document.getElementById(idReq);
+    this.busy = false;
+    this.lastUpdate = 0;
+    this.now = 0;
+    window.setInterval(_ => this.interrupt(), 1000);
+  }
+
+  interrupt() {
+    this.now = Math.floor(Date.now() / 1000);
+    const interval = parseInt(this.dom.querySelector('.interval').value, 10);
+    if (interval > 0 && this.now - this.lastUpdate >= interval) {
+      this.fetch();
+    }
   }
 
   timeIso(date = new Date()) {
@@ -95,9 +126,15 @@ class Velocite {
   promFetch() {
     const nbReq = ++this.nbReq;
     const nbReqDom = this.dom.querySelector('.nbReq');
+    this.busy = true;
     nbReqDom.innerHTML = `${nbReq}…`;
     return fetch(this.url)
-    .then((r) => { nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`; return r.json(); });
+    .then((r) => {
+      this.busy = false;
+      this.lastUpdate = Math.floor(Date.now() / 1000);
+      nbReqDom.innerHTML = `${nbReq} (${this.timeIso()})`;
+      return r.json();
+    });
   }
 
   fetch() {
@@ -108,12 +145,25 @@ class Velocite {
   }
 
   nextReq(r) {
+    const showAll = this.dom.querySelector('input[type=checkbox]').checked;
+    const show = [13, 11, 12, 17];
     let txt = '';
-    // trie par numéro
-    r = r.sort((a, b) => a.number - b.number);
+    let stations = [];
 
-    r.forEach((st) => {
-      txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands}<br />`;
+    if (showAll) {
+      // trie par numéro
+      stations = r.sort((a, b) => a.number - b.number);
+    } else {
+      show.forEach((a) => {
+        const station = r.find(b => b.number === a);
+        if (station) {
+          stations.push(station);
+        }
+      });
+    }
+
+    stations.forEach((st) => {
+      txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands} - ${this.lastUpdate - st.last_update / 1000}<br />`;
     });
     this.dom.querySelector('.stations').innerHTML = txt;
   }
