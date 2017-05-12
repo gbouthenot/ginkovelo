@@ -1,0 +1,21 @@
+{
+  "name": "ginko",
+  "version": "0.0.0",
+  "description": "Obtenir horaires temps réel réseau Ginko",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ginko",
+    "velocite",
+    "horaires"
+  ],
+  "author": "Gilles Bouthenot",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-import": "^2.2.0"
+  }
+}

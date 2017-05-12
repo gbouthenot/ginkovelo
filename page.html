@@ -24,18 +24,19 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 </div><!-- .arretTram -->
 
 <script type="text/html" id="tplDestination">
-  <li class="destination" data-nomdest="${NOMDEST}">→ ${NOMDEST} : <span class="horaires"></span></li>
+  <li class="destination" data-nomdest="#{NOMDEST}">→ #{NOMDEST} : <span class="horaires"></span></li>
 </script>
 
 <script>
-var ginko = new Ginko("tram_cham", "chamars");
+/* eslint-disable no-unused-vars */
+const ginko = new Ginko('tram_cham', 'chamars');
 ginko.fetch();
 setInterval(_ => ginko.fetch(), 10000);
-//setTimeout(_ => ginko.fetch(), 10000);
+// setTimeout(_ => ginko.fetch(), 10000);
 
-const velo6t = new Velocite("velo_11", "Besancon", "***your_id***");
+const velo6t = new Velocite('velo_11', 'Besancon', '***your_id***');
 velo6t.fetch();
-setInterval(_ => velo6t.fetch(), 10000);
+//setInterval(_ => velo6t.fetch(), 10000);
 </script>
 </body>
 </html>
