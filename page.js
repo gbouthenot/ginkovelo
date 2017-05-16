@@ -3,7 +3,6 @@
 
 // TODO: add timeout
 // TODO: ginko: change should abort fetch
-// todo: velo: show all should be instantaneous
 
 class Ginko {
   constructor(idReq, nomStation) {
@@ -127,7 +126,12 @@ class Velocite {
     this.dom = document.getElementById(idReq);
     this.busy = false;
     this.lastUpdate = 0;
+    this.lastData = [];
     this.now = 0;
+
+    this.dom.querySelector('input[type=checkbox]').addEventListener('change', (_) => {
+      this.render();
+    });
     window.setInterval(_ => this.interrupt(), 1000);
   }
 
@@ -163,11 +167,16 @@ class Velocite {
   fetch() {
     const prom = this.promFetch();
 
-    prom.then(data => this.nextReq(data));
+    prom.then((data) => {
+      this.lastData = data;
+      this.render();
+    });
+
     prom.catch(r => console.log('Erreur', r));
   }
 
-  nextReq(r) {
+  render() {
+    const r = this.lastData;
     const showAll = this.dom.querySelector('input[type=checkbox]').checked;
     const show = [13, 11, 12, 17];
     let txt = '';
@@ -186,8 +195,11 @@ class Velocite {
     }
 
     stations.forEach((st) => {
+      const name = st.name.toLocaleLowerCase().replace(' (cb)', '');
+      txt += `${name}: ${st.available_bikes}/${st.bike_stands}<br />`;
       /* eslint-disable no-mixed-operators */
-      txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands} - ${this.lastUpdate - st.last_update / 1000}<br />`;
+      // txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands}` +
+      // ` - ${this.lastUpdate - st.last_update / 1000}<br />`;
       /* eslint-enable no-mixed-operators */
     });
     this.dom.querySelector('.stations').innerHTML = txt;
