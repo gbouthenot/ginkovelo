@@ -12,7 +12,7 @@ ul.destinations { list-style:none; margin-top:0; padding-left:1em; }
 <body>
 
 <div class="arretTram" id="tram_cham">
-  <div class="req"><span class="nbReq"></span> — Refresh every <input class="interval" type="number" value="10"/> seconds</div>
+  <div class="req"><span class="nbReq"></span> — Refresh every <input class="interval" type="number" value="10"/> seconds — Station: <select></select></div>
   <div class="nomArret">Tramway arrêt <span class="value"></span>:</div>
   <ul class="destinations"></ul>
 </div><!-- .arretTram -->
@@ -28,8 +28,8 @@ Stations vélos:
 </script>
 
 <script>
-/* eslint-disable no-unused-vars */
-const ginko = new Ginko('tram_cham', 'chamars');
+/* eslint-disable no-unused-vars, no-undef */
+const ginko = new Ginko('tram_cham', 'Chamars');
 
 const velo6t = new Velocite('velo_11', 'Besancon', '***your_id***');
 

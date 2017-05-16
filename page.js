@@ -1,15 +1,36 @@
 /* eslint-disable no-plusplus, no-console, no-multiple-empty-lines, no-param-reassign,
-   class-methods-use-this, no-unused-vars */
+   class-methods-use-this, no-unused-vars, prefer-template */
+
+// TODO: add timeout
+// TODO: ginko: change should abort fetch
+// todo: velo: show all should be instantaneous
+
 class Ginko {
-  constructor(idReq, urlNomStation) {
+  constructor(idReq, nomStation) {
     this.nbReq = 0;
     this.rendered = 0;
     this.idReq = idReq;
-    this.url = `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${urlNomStation}`;
     this.dom = document.getElementById(idReq);
     this.busy = false;
     this.lastUpdate = 0;
     this.now = 0;
+    // render stations:
+    let stations = 'Hauts du Chazal; UFR Médecine Pharma; Pôle Santé; CHRU Minjoz; Ile de France; ' +
+      'Epoisses; Allende; Micropolis; Malcombe; Rosemont; Brulard; Polygone; Chamars; Canot; Battant; ' +
+      'Révolution; République; Parc Micaud; Fontaine Argent; Tristan Bernard; Brûlefoin; Les Vaîtes; ' +
+      'Schweitzer; Croix de Palente; Lilas; Orchamps; Fort Benoît; Marnières; Chalezeule';
+    stations = stations.split('; ');
+    const el = this.dom.querySelector('select');
+    stations.forEach((station) => {
+      const selected = station === nomStation ? 'selected' : '';
+      const html = `<option name="${station}" ${selected}>${station}</option>`;
+      el.innerHTML += html;
+    });
+    el.addEventListener('change', (e) => {
+      this.rendered = 0;
+      this.lastUpdate = 0;
+    });
+
     window.setInterval(_ => this.interrupt(), 1000);
   }
 
@@ -22,10 +43,8 @@ class Ginko {
   }
 
   timeIso(date = new Date()) {
-    /* eslint-disable prefer-template */
     return ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2)
       + ':' + ('0' + date.getSeconds()).slice(-2);
-    /* eslint-enable prefer-template */
   }
 
   replaceAll(string, search, replace) {
@@ -35,9 +54,11 @@ class Ginko {
   promFetch() {
     const nbReq = ++this.nbReq;
     const nbReqDom = this.dom.querySelector('.nbReq');
+    const nomStation = this.dom.querySelector('select').value;
+    const url = `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${nomStation}`;
     this.busy = true;
     nbReqDom.innerHTML = `${nbReq}…`;
-    return fetch(this.url)
+    return fetch(url)
     .then((r) => {
       this.busy = false;
       this.lastUpdate = Math.floor(Date.now() / 1000);
@@ -69,10 +90,12 @@ class Ginko {
     // ne garde que le nom de destination puis unique
     r = r.map(a => a.destination).filter((x, i, a) => a.indexOf(x) === i);
 
+    const eldests = this.dom.querySelector('.destinations');
+    eldests.innerHTML = '';
     // pour chaque destination
     r.forEach((nomdest) => {
       const tpl = this.replaceAll(tpldest, '#{NOMDEST}', nomdest);
-      this.dom.querySelector('.destinations').innerHTML += tpl;
+      eldests.innerHTML += tpl;
     });
 
     return data;
@@ -163,7 +186,9 @@ class Velocite {
     }
 
     stations.forEach((st) => {
+      /* eslint-disable no-mixed-operators */
       txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands} - ${this.lastUpdate - st.last_update / 1000}<br />`;
+      /* eslint-enable no-mixed-operators */
     });
     this.dom.querySelector('.stations').innerHTML = txt;
   }
