@@ -16,7 +16,7 @@ class Ginko {
   interrupt() {
     this.now = Math.floor(Date.now() / 1000);
     const interval = parseInt(this.dom.querySelector('.interval').value, 10);
-    if (interval > 0 && this.now - this.lastUpdate >= interval) {
+    if (!this.busy && interval > 0 && this.now - this.lastUpdate >= interval) {
       this.fetch();
     }
   }
@@ -111,7 +111,7 @@ class Velocite {
   interrupt() {
     this.now = Math.floor(Date.now() / 1000);
     const interval = parseInt(this.dom.querySelector('.interval').value, 10);
-    if (interval > 0 && this.now - this.lastUpdate >= interval) {
+    if (!this.busy && interval > 0 && this.now - this.lastUpdate >= interval) {
       this.fetch();
     }
   }
