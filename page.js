@@ -219,11 +219,19 @@ class Velocite {
 
     stations.forEach((st) => {
       const name = st.name.toLocaleLowerCase().replace(' (cb)', '');
-      txt += `${name}: ${st.available_bikes}/${st.bike_stands}<br />`;
-      /* eslint-disable no-mixed-operators */
-      // txt += `${st.name.toLocaleLowerCase()}: ${st.available_bikes}/${st.bike_stands}` +
-      // ` - ${this.lastUpdate - st.last_update / 1000}<br />`;
-      /* eslint-enable no-mixed-operators */
+      const ava = st.available_bikes;
+      const tot = st.bike_stands;
+      const pc = ava / tot;
+      let cls = '';console.log(pc);
+      if (pc >= 0.7) {
+        cls = 'verygood';
+      } else if (pc < 0.2) {
+        cls = 'verybad';
+      } else if (pc < 0.5) {
+        cls = 'warn';
+      }
+
+      txt += `${name}: <span class="${cls}">${ava}/${tot}</span><br />`;
     });
     this.dom.querySelector('.stations').innerHTML = txt;
   }
