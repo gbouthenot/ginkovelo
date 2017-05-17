@@ -25,9 +25,16 @@ class Ginko {
       const html = `<option name="${station}" ${selected}>${station}</option>`;
       el.innerHTML += html;
     });
+
+    // quand on change la station
     el.addEventListener('change', (e) => {
       this.rendered = 0;
-      this.lastUpdate = 0;
+      this.fetch();
+    });
+
+    // Appui sur bouton
+    this.dom.querySelector('.nbReq').addEventListener('click', (e) => {
+      this.fetch();
     });
 
     window.setInterval(_ => this.interrupt(), 1000);
@@ -136,9 +143,16 @@ class Velocite {
     this.lastData = [];
     this.now = 0;
 
+    // checkbox "show all"
     this.dom.querySelector('input[type=checkbox]').addEventListener('change', (_) => {
       this.render();
     });
+
+    // Appui sur bouton
+    this.dom.querySelector('.nbReq').addEventListener('click', (e) => {
+      this.fetch();
+    });
+
     window.setInterval(_ => this.interrupt(), 1000);
   }
 
