@@ -50,6 +50,10 @@ class Ginko {
     return string.split(search).join(replace);
   }
 
+  delay(ms) {
+    return value => new Promise(resolve => setTimeout(_ => resolve(value), ms));
+  }
+
   promFetch() {
     const nbReq = ++this.nbReq;
     const nbReqDom = this.dom.querySelector('.nbReq');
@@ -66,15 +70,18 @@ class Ginko {
     });
   }
 
-  fetch() {
-    const prom = this.promFetch();
 
-    if (!this.rendered) {
-      prom.then(data => this.firstReq(data));
-      this.rendered++;
-    }
-    prom.then(data => this.nextReq(data));
-    prom.catch(r => console.log('Error', r));
+  fetch() {
+    this.promFetch()
+    .then((data) => {
+      if (!this.rendered) {
+        this.rendered++;
+        return this.firstReq(data);
+      }
+      return data;
+    })
+    .then(data => this.nextReq(data))
+    .catch(r => console.log('Error', r));
   }
 
   firstReq(data) {
@@ -150,6 +157,10 @@ class Velocite {
     /* eslint-enable prefer-template */
   }
 
+  delay(ms) {
+    return value => new Promise(resolve => setTimeout(_ => resolve(value), ms));
+  }
+
   promFetch() {
     const nbReq = ++this.nbReq;
     const nbReqDom = this.dom.querySelector('.nbReq');
@@ -165,14 +176,12 @@ class Velocite {
   }
 
   fetch() {
-    const prom = this.promFetch();
-
-    prom.then((data) => {
+    this.promFetch()
+    .then((data) => {
       this.lastData = data;
       this.render();
-    });
-
-    prom.catch(r => console.log('Erreur', r));
+    })
+    .catch(r => console.log('Erreur', r));
   }
 
   render() {
