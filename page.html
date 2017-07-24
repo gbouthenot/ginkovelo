@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <script type="text/javascript" src="page.js"></script>
+  <script type="text/javascript" src="page.js" async></script>
+  <script type="text/javascript" src="secrets.js"></script>
 <style>
 .req { display:inline; }
 .val { display:inline; }
@@ -36,7 +37,7 @@ Vélocité:
 /* eslint-disable no-unused-vars, no-undef */
 const ginko = new Ginko('tram_cham', 'Chamars');
 
-const velo6t = new Velocite('velo_11', 'Besancon', '***your_id***');
+const velo6t = new Velocite('velo_11', 'Besancon', Secrets.velocite.id);
 
 </script>
 </body>
