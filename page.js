@@ -1,5 +1,4 @@
-/* eslint-disable no-plusplus, no-console, no-multiple-empty-lines, no-param-reassign,
-   class-methods-use-this, no-unused-vars, prefer-template */
+/* eslint-disable no-console */
 
 // TODO: add timeout
 // TODO: ginko: change should abort fetch
@@ -31,9 +30,8 @@ class Common {
     }
   }
 
-  timeIso(date = new Date()) {
-    return ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2)
-      + ':' + ('0' + date.getSeconds()).slice(-2);
+  timeIso(d = new Date()) {
+    return `0${d.getHours()}:`.slice(-3) + `0${d.getMinutes()}:`.slice(-3) + `0${d.getSeconds()}`.slice(-2);
   }
 
   delay(ms) {
@@ -73,7 +71,6 @@ class Common {
 
   firstReq() {}
 }
-
 
 
 class Ginko extends Common {
@@ -139,12 +136,6 @@ class Ginko extends Common {
     });
   }
 }
-
-
-
-
-
-
 
 
 class Velocite extends Common {
