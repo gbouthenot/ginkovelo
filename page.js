@@ -99,7 +99,7 @@ class Ginko extends Common {
 
   geturl() {
     const nomStation = this.dom.querySelector('select').value;
-    return `https://www.ginkoopenapi.fr/TR/getTempsLieu.do?nom=${nomStation}`;
+    return `https://api.ginko.voyage/TR/getTempsLieu.do?nom=${nomStation}`;
   }
 
   firstReq(data) {
