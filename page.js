@@ -2,6 +2,11 @@
 
 // TODO: add timeout
 // TODO: ginko: change should abort fetch
+// TODO: ginko: affiche infos traffic
+// TODO: ginko: Ajouter selecteur de ligne
+// TODO: en plus de Station, permettre de sélectionner sens
+//       choisir ligne puis sens puis station
+
 
 class Common {
   constructor(idReq) {
@@ -73,15 +78,43 @@ class Common {
 }
 
 
+/**
+ * Pour rajouter un arrêt:
+ * Obtenir les lignes et les variantes:
+ * lignes = (await (await fetch("https://api.ginko.voyage/DR/getLignes.do")).json()).objets
+ *
+ * ex: id:"4", numLignePublic:"4", libellePublic:"Châteaufarine <> Orchamps"
+ *     variantes:
+ *     - id:"68-1", sensAller:true,  destination:"Pôle Orchamps", precisionDestination: "par Centre-ville - 8 Septembre"
+ *     - id:"68-4", sensAller:false, destination:"Châteaufarine", precisionDestination: "par Centre-ville - Granvelle"
+ *
+ * Les arrêts d'une variante:
+ * arrets = (await (await fetch("https://api.ginko.voyage/DR/getDetailsVariante.do?idLigne=253&idVariante=1-1")).json())
+ * arrets = (await (await fetch("https://api.ginko.voyage/DR/getDetailsVariante.do?idLigne=4&idVariante=68-1")).json())
+ * arrets = (await (await fetch("https://api.ginko.voyage/DR/getDetailsVariante.do?idLigne=4&idVariante=68-4")).json())
+ *
+ * ex: pour ligne id=4, variante=68-1 et 68-4:
+ *   - id: "ILDFRAN3", nom: "Ile de France"
+ *
+ * pour obtenir les stations dans l'ordre, séparées par des ;:
+ * arrets.objets.map(_=>_.nom).join("; ");
+ *
+ * Obtenir les temps à la station "ILDFRAN3":
+ * tr = (await (await fetch("https://api.ginko.voyage/TR/getTempsLieu.do?nom=ILDFRAN3")).json())
+ * ((idLigne, sens)=>tr.objets.listeTemps.filter(_ => _.numLignePublic===idLigne && (sens===undefined || _.sensAller===sens)))('4', true);
+ *  - temps: "8 min", fiable: true, idArret: "ILDFRAN1" (??)
+ *  - temps: "16 min", fiable: true, idArret: "ILDFRAN1" (??)
+ */
 class Ginko extends Common {
   constructor(idReq, nomStation) {
     super(idReq);
 
     // render stations
-    let stations = 'Hauts du Chazal; UFR Médecine Pharma; Pôle Santé; CHRU Minjoz; Ile de France; ' +
+    let stations2 = 'Hauts du Chazal; UFR Médecine Pharma; Pôle Santé; CHRU Minjoz; Ile de France; ' +
       'Epoisses; Allende; Micropolis; Malcombe; Rosemont; Brulard; Polygone; Chamars; Canot; Battant; ' +
       'Révolution; République; Parc Micaud; Fontaine Argent; Tristan Bernard; Brûlefoin; Les Vaîtes; ' +
       'Schweitzer; Croix de Palente; Lilas; Orchamps; Fort Benoît; Marnières; Chalezeule';
+    let stations = "Orchamps; St Pie X; Pierre et Marie Curie; Corvée; Debussy; Mutualité; Les Oiseaux; Pont des Cras; Suard; Liberté; Flore; Denfert Rochereau; République; Poste; 8 Septembre; Carmes; Granvelle; Préfecture; St Jacques; 8 Mai; Janvier; Croix d'Arènes; La Butte; Jean Jaurès; Résidence; Bascule; Concorde; Oratoire; Einstein; Flandres; Brabant; Piémont; Voltaire; Pavie; Vivarais; Languedoc; Béarn; De Vigny; Marot; René Char; Châteaufarine";
     stations = stations.split('; ');
     const el = this.dom.querySelector('select');
     stations.forEach((station) => {
@@ -108,11 +141,15 @@ class Ginko extends Common {
     // nom de la station
     this.dom.querySelector('.nomArret .value').innerHTML = data.objets.nomExact;
 
-    // ne garde que les lignes de tram
-    let r = data.objets.listeTemps.filter(a => ['101', '102'].includes(a.idLigne));
+    let r = data.objets.listeTemps;
 
-    // ne garde que le nom de destination puis unique
-    r = r.map(a => a.destination);
+    // ne garde que les lignes de tram
+    // r = data.objets.listeTemps.filter(a => ['101', '102'].includes(a.idLigne));
+
+    // // ne garde que (num de la ligne;destination) puis unique
+    // r = r.map(a => `${a.numLignePublic};${a.destination}`);
+    // ne garde que (destination) puis unique
+    r = r.map(a => `${a.destination}`);
     r = r.filter((x, i, a) => a.indexOf(x) === i);
 
     const eldests = this.dom.querySelector('.destinations');

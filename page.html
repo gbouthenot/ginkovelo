@@ -22,11 +22,20 @@ Tram Ginko:
   <ul class="destinations"></ul>
 </div><!-- .arretTram -->
 
+<br />
+Ligne 4:
+<div class="arretTram" id="ginko_4">
+  <div class="req"><button class="nbReq"></button><span class="nbReq"></span> — Refresh <input class="interval" type="number" value="30"/> s — Station: <select></select></div>
+  <div class="nomArret">Tramway arrêt <span class="value"></span>:</div>
+  <ul class="destinations"></ul>
+</div><!-- .arretTram -->
+
+
 Vélocité:
 <div class="stationVelo" id="velo_11">
   <div class="req"><button class="nbReq"></button> — Refresh <input class="interval" type="number" value="30"/> s — Show all: <input type="checkbox" /></div>
   <div class="stations"></div>
-</div><!-- .arretTram -->
+</div><!-- .stationVelo -->
 
 <script type="text/html" id="tplDestination">
   <li class="destination" data-nomdest="#{NOMDEST}">→ #{NOMDEST} : <span class="horaires"></span></li>
@@ -37,6 +46,7 @@ Vélocité:
 <script>
 /* eslint-disable no-unused-vars, no-undef */
 const ginko = new Ginko('tram_cham', 'Chamars');
+const ginko4 = new Ginko('ginko_4', 'Carmes');
 
 const velo6t = new Velocite('velo_11', 'Besancon', Secrets.velocite.id);
 
