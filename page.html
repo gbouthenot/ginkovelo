@@ -45,8 +45,8 @@ Vélocité:
 <script type="text/javascript" src="secrets.js"></script>
 <script>
 /* eslint-disable no-unused-vars, no-undef */
-const ginko = new Ginko('tram_cham', 'Chamars');
-const ginko4 = new Ginko('ginko_4', 'Carmes');
+const ginko = new Ginko('tram_cham', 'Chamars', Secrets.ginko.api_key);
+const ginko4 = new Ginko('ginko_4', 'Carmes', Secrets.ginko.api_key);
 
 const velo6t = new Velocite('velo_11', 'Besancon', Secrets.velocite.id);
 

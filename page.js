@@ -103,9 +103,10 @@ class Common {
  *  - temps: "16 min", fiable: true, idArret: "ILDFRAN1" (??)
  */
 class Ginko extends Common {
-  constructor (idReq, nomStation) {
+  constructor (idReq, nomStation, apiKey) {
     super(idReq)
 
+    this.apiKey = apiKey
     // render stations
     // let stations2 = 'Hauts du Chazal; UFR Médecine Pharma; Pôle Santé; CHRU Minjoz; Ile de France; ' +
     //   'Epoisses; Allende; Micropolis; Malcombe; Rosemont; Brulard; Polygone; Chamars; Canot; Battant; ' +
@@ -129,7 +130,7 @@ class Ginko extends Common {
 
   geturl () {
     const nomStation = this.dom.querySelector('select').value
-    return `https://api.ginko.voyage/TR/getTempsLieu.do?nom=${nomStation}`
+    return `https://api.ginko.voyage/TR/getTempsLieu.do?apiKey=${this.apiKey}&nom=${nomStation}`
   }
 
   firstReq (data) {
@@ -226,4 +227,6 @@ class Velocite extends Common {
   }
 }
 
-module.exports = { Ginko, Velocite }
+if (typeof module !== 'undefined') {
+  module.exports = { Ginko, Velocite }
+}
